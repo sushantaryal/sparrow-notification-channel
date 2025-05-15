@@ -26,7 +26,7 @@ class SparrowSmsServiceProvider extends ServiceProvider
         });
 
         Notification::resolved(function (ChannelManager $service) {
-            $service->extend('vonage', function ($app) {
+            $service->extend('sparrowsms', function ($app) {
                 return $app->make(SparrowSmsChannel::class);
             });
         });

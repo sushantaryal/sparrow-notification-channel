@@ -1,11 +1,10 @@
 <?php
 
-namespace Sushant\Notifications\SparrowSms\Channels;
+namespace Sushant\SparrowSmsNotification;
 
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Sushant\Notifications\SparrowSms\Messages\SparrowMessage;
 
 class SparrowSmsChannel
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sushant\Notifications\SparrowSms\Messages;
+namespace Sushant\SparrowSmsNotification;
 
 class SparrowMessage
 {

@@ -22,7 +22,7 @@ SPARROW_SMS_FROM=identity #always required
 Run
 
 ```
-php artisan vendor:publish --provider="Sushant\Notifications\SparrowSms\SparrowSmsServiceProvider"
+php artisan vendor:publish --provider="Sushant\SparrowSmsNotification\SparrowSmsServiceProvider"
 ```
 
 ```
@@ -35,7 +35,7 @@ Now you can use the channel in your `via()` method inside the notification:
 
 ```php
 use Illuminate\Notifications\Notification;
-use Sushant\Notifications\SparrowSms\Messages\SparrowMessage;
+use Sushant\SparrowSmsNotification\SparrowMessage;
 
 class VerifyOtp extends Notification
 {

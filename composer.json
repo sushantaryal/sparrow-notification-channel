@@ -29,6 +29,11 @@
             "Sushant\\SparrowSmsNotification\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Sushant\\SparrowSmsNotification\\Tests\\": "tests"
+        }
+    },
     "config": {
         "sort-packages": true
     },

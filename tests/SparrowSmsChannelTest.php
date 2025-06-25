@@ -2,23 +2,20 @@
 
 namespace Sushant\SparrowSmsNotification\Tests;
 
-use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Notification as BaseNotification;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Orchestra\Testbench\TestCase;
+use Illuminate\Support\Facades\Notification;
 use Sushant\SparrowSmsNotification\SparrowMessage;
-use Sushant\SparrowSmsNotification\SparrowSmsChannel;
 
 class SparrowSmsChannelTest extends TestCase
 {
     public function test_sends_sms_using_sparrowsms_channel()
     {
-        $response = Http::fake();
-
-        $channel = new SparrowSmsChannel('test-token', '1234567890');
+        Http::fake();
 
         $notifiable = new class {
-            public $phone_number = '1234567890';
+            public $phone_number = '9800000000';
 
             public function routeNotificationFor($channel, $notification)
             {
@@ -26,21 +23,27 @@ class SparrowSmsChannelTest extends TestCase
             }
         };
 
-        $notification = new class extends Notification {
+        $notification = new class extends BaseNotification {
+            public function via($notifiable)
+            {
+                return ['sparrowsms'];
+            }
+
             public function toSparrowSms($notifiable)
             {
-                return new SparrowMessage('Hello World');
+                return (new SparrowMessage)
+                    ->content('Test message');
             }
         };
 
-        $channel->send($notifiable, $notification);
+        Notification::send($notifiable, $notification);
 
         Http::assertSent(function ($request) {
             return $request->url() === 'https://api.sparrowsms.com/v2/sms/'
                 && $request['token'] === 'test-token'
                 && $request['from'] === '1234567890'
-                && $request['to'] === '1234567890'
-                && $request['text'] === 'Hello World';
+                && $request['to'] === '9800000000'
+                && $request['text'] === 'Test message';
         });
     }
 
@@ -50,10 +53,14 @@ class SparrowSmsChannelTest extends TestCase
             'https://api.sparrowsms.com/v2/sms/' => Http::response(['message' => 'Unauthorized'], 401),
         ]);
 
-        $channel = new SparrowSmsChannel('bad-token', '1234567890');
+        Log::shouldReceive('error')
+            ->once()
+            ->with([
+                'message' => 'Unauthorized',
+            ]);
 
         $notifiable = new class {
-            public $phone_number = '1234567890';
+            public $phone_number = '9800000000';
 
             public function routeNotificationFor($channel, $notification)
             {
@@ -61,15 +68,19 @@ class SparrowSmsChannelTest extends TestCase
             }
         };
 
-        $notification = new class extends Notification {
+        $notification = new class extends BaseNotification {
+            public function via($notifiable)
+            {
+                return ['sparrowsms'];
+            }
+
             public function toSparrowSms($notifiable)
             {
-                return new SparrowMessage('Fail test');
+                return (new SparrowMessage)
+                    ->content('Fail message');
             }
         };
 
-        Log::shouldReceive('error')->once();
-
-        $channel->send($notifiable, $notification);
+        Notification::send($notifiable, $notification);
     }
 }
